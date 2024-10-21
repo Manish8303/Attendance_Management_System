@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Attendance Management</title>
+    <link rel="stylesheet" href="style12.css">
+    <link rel="icon" type="image/x-icon" href="Screenshot 2024-10-21 at 1.55.03 PM.png">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        /* Add styles for the class boxes */
+        .class-box-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .class-box {
+            width: 300px;
+            height: 300px;
+            margin: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #0015ffd6;
+            color: white;
+            font-size: 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .class-box > p {
+            margin: 0; /* Remove default margin for better centering */
+            text-align: center; /* Center text within the box */
+            word-wrap: break-word; /* Allow text to wrap if it exceeds the box width */
+        }
+        
+        .class-box:hover {
+            background-color: #0057b3b8;
+            transform: translateY(-3px);
+        }
+        
+        .class-box:active {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <h2>CUAMS</h2>
+        <ul>
+            <li><a href="">Dashboard</a></li>
+            <li><a href="manage_students.html">Manage Students</a></li>
+            <li><a href="mark_attendance.html">Mark Attendance</a></li>
+            <li><a href="view_attendance.html">View Attendance</a></li>
+            <li><a href="login_page.html">Logout</a></li>
+        </ul>
+    </aside>
+
+    <section class="main-content">
+        <header>
+            <div class="admin-info">
+                <div style="width: 50%;">
+                    <h1>Dashboard</h1>
+                </div>
+                <div class="button-container">
+                    <button onclick="window.location.href='login_page.html'">Logout</button>
+                </div>
+            </div>
+            <h5>Welcome to Chandigarh University Attendance Management System</h5>
+        </header>
+
+        <div class="dashboard">
+            <div class="stats-cards">
+                <div class="card">
+                    <h3>Total Students</h3>
+                    <p id="totalStudents">0</p>
+                </div>
+                <div class="card">
+                    <h3>Students Present</h3>
+                    <p id="studentsPresent">0</p>
+                </div>
+            </div>
+
+            <!-- Add class boxes here -->
+            <div class="class-box-container">
+                <div class="class-box" onclick="handleClassClick('Computer Programming')">Computer Programming</div>
+                <div class="class-box" onclick="handleClassClick('Data Structures and Algorithms')">Data Structures and Algorithms</div>
+                <div class="class-box" onclick="handleClassClick('Operating Systems')">Operating Systems</div>
+                <div class="class-box" onclick="handleClassClick('Database Management Systems')">Database Management Systems</div>
+                <div class="class-box" onclick="handleClassClick('Computer Networks')">Computer Networks</div>
+                <div class="class-box" onclick="handleClassClick('Software Engineering')">Software Engineering</div>
+                <div class="class-box" onclick="handleClassClick('Web Development')">Web Development</div>
+                <div class="class-box" onclick="handleClassClick('Theory of Computation')">Theory of Computation</div>
+            </div>
+
+        </div>
+    </section>
+
+    <script>
+        $(document).ready(function() {
+            // Function to load total students and their attendance
+            function loadDashboardData() {
+                // Fetch total students
+                $.ajax({
+                    url: "http://localhost:3000/students/count", // Adjust this route based on your backend API
+                    method: "GET",
+                    success: function(data) {
+                        $('#totalStudents').text(data.total); // Update total students
+                    }
+                });
+
+                // Fetch total present students
+                $.ajax({
+                    url: "http://localhost:3000/attendance/present/count", // Adjust this route based on your backend API
+                    method: "GET",
+                    success: function(data) {
+                        $('#studentsPresent').text(data.present); // Update students present
+                    }
+                });
+            }
+
+            // Helper function to format the date
+            function formatDate(dateString) {
+                const date = new Date(dateString);
+                const day = String(date.getDate()).padStart(2, '0');
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const year = date.getFullYear();
+                return `${day}/${month}/${year}`;
+            }
+
+            // Call the function to load data on page load
+            loadDashboardData();
+        });
+
+        function handleClassClick(className) {
+            alert('You clicked on ' + className);
+            // Add more functionality as needed
+        }
+    </script>
+</body>
+</html>

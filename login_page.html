@@ -1,0 +1,87 @@
+<html>
+ <head>
+  <title>
+   CUAMS Login
+  </title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+  <link rel="icon" type="image/x-icon" href="Screenshot 2024-10-21 at 1.55.03 PM.png">
+  <style>
+   body, html {
+            height: 100%;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            background: url(login-bg-new-7.jpg) no-repeat center center fixed;
+            background-size: cover;
+        }
+        .login-container {
+            background: rgba(255, 255, 255, 0.6);
+            padding: 20px;
+            border-radius: 10px;
+            width: 300px;
+            text-align: center;
+            color: white;
+            margin-left: 150px;
+        }
+        .login-container img {
+            width: 220px;
+            height: 150px;
+        }
+        .login-container h1 {
+            font-size: 24px;
+            margin: 10px 0;
+        }
+        .login-container p {
+            margin: 10px 0;
+        }
+        .login-container input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+        }
+        .login-container .btn {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .login-container .btn-primary {
+            background-color: #ff0000;
+            color: white;
+        }
+        .login-container .btn-secondary {
+            background-color: #007bff;
+            color: white;
+        }
+        .login-container .or {
+            margin: 10px 0;
+        }
+  </style>
+ </head>
+ <body>
+  <div class="login-container">
+   <img alt="CUIMS Logo" height="100" src="Screenshot 2024-10-21 at 1.55.03 PM.png" width="100"/>
+   <h1>
+    Log in
+   </h1>
+   <p>
+    Welcome to University Information Management System
+   </p>
+   <input id="username" placeholder="Enter User Id" type="text"/>
+      <input id="password" placeholder="Enter Password" type="password"/>
+      <button class="btn btn-primary" onclick="login()">LOGIN</button>
+  
+   </button>
+   Forgot Password?
+   </button>
+  </div>
+  <script src="script.js"></script>
+ </body>
+
+</html>

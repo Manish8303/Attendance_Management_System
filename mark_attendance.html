@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Attendance Management</title>
+    <link rel="stylesheet" href="style12.css">
+    <link rel="icon" type="image/x-icon" href="Screenshot 2024-10-21 at 1.55.03 PM.png">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        /* Button Styles */
+.submit-button {
+    padding: 10px 20px;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    float: right;
+    margin-top: 20px;
+}
+
+
+
+
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <h2>CUAMS</h2>
+        <ul>
+            <li><a href="#">Dashboard</a></li>
+            <li><a href="manage_students.html">Manage Students</a></li>
+            <li><a href="mark_attendance.html">Mark Attendance</a></li>
+            <li><a href="view_attendance.html">View Attendance</a></li>
+            <li><a href="login_page.html">Logout</a></li>
+        </ul>
+    </aside>
+
+    <!-- Mark Attendance HTML -->
+<section class="main-content">
+    <header>
+        <h1>Mark Attendance</h1>
+    </header>
+
+    <form id="attendanceForm">
+        <table>
+            <thead>
+                <tr>
+                    <th>Student ID</th>
+                    <th>Name</th>
+                    <th>Attendance</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Dynamically filled -->
+            </tbody>
+        </table>
+        <button class="submit-button" type="submit">Submit Attendance</button>
+    </form>
+
+    <script>
+        $(document).ready(function() {
+            // Load students to mark attendance
+            function loadStudentsForAttendance() {
+                $.ajax({
+                    url: "http://localhost:3000/students",
+                    method: "GET",
+                    success: function(data) {
+                        let rows = '';
+                        data.forEach(student => {
+                            rows += `<tr>
+                                <td>${student.student_id}</td>
+                                <td>${student.name}</td>
+                                <td>
+                                    <select name="attendanceStatus_${student.student_id}">
+                                        <option value="Present">Present</option>
+                                        <option value="Absent">Absent</option>
+                                    </select>
+                                </td>
+                            </tr>`;
+                        });
+                        $('#attendanceForm tbody').html(rows);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(xhr.responseText);
+                        alert("Error loading students: " + xhr.responseText);
+                    }
+                });
+            }
+loadStudentsForAttendance();            
+
+            // Submit attendance
+            $('#attendanceForm').on('submit', function(e) {
+                e.preventDefault();
+
+                const attendanceRecords = [];
+                $('#attendanceForm tbody tr').each(function() {
+                    const studentId = $(this).find('td').first().text();
+                    const status = $(this).find('select').val();
+                    attendanceRecords.push({ student_id: studentId, status: status });
+                });
+
+                $.ajax({
+                    url: "http://localhost:3000/attendance", // API endpoint to mark attendance
+                    method: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify(attendanceRecords),
+                    success: function(response) {
+                        alert(response.message);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(xhr.responseText);
+                        alert("Error marking attendance: " + xhr.responseText);
+                    }
+                });
+            });
+        });
+    </script>
+</section>
+</body>
+</html>

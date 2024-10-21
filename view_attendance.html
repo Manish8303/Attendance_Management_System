@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Attendance Management</title>
+    <link rel="stylesheet" href="style12.css">
+    <link rel="icon" type="image/x-icon" href="Screenshot 2024-10-21 at 1.55.03 PM.png">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+       button.update-atd{
+        margin-right: 20px;
+       }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <h2>CUAMS</h2>
+        <ul>
+            <li><a href="attendance.html">Dashboard</a></li>
+            <li><a href="manage_students.html">Manage Students</a></li>
+            <li><a href="mark_attendance.html">Mark Attendance</a></li>
+            <li><a href="view_attendance.html">View Attendance</a></li>
+            <li><a href="login_page.html">Logout</a></li>
+        </ul>
+    </aside>
+
+    <!-- Main Content for Viewing and Editing Attendance -->
+    <section class="main-content">
+        <header>
+            <h1>View and Edit Attendance</h1>
+        </header>
+
+        <!-- Attendance Table -->
+        <div id="attendanceTable">
+            <!-- Dynamically loaded attendance data -->
+        </div>
+
+        <!-- Update Attendance Form (hidden initially) -->
+        <div class="form-container" id="updateAttendanceFormContainer" style="display:none;">
+            <h2>Edit Attendance</h2>
+            <form id="updateAttendanceForm">
+                <input type="hidden" id="updateAttendanceId">
+                <input type="hidden" id="updateStudentId">
+                <label for="updateAttendanceDate">Attendance Date:</label>
+                <input type="date" id="updateAttendanceDate" disabled><br>
+                
+                <label for="updateAttendanceStatus">Status:</label>
+                <select id="updateAttendanceStatus" required>
+                    <option value="Present">Present</option>
+                    <option value="Absent">Absent</option>
+                </select><br><br>
+
+                <button class="update-atd"type="submit">Update Attendance</button>
+                <button class="cancel-btnnn"type="button" id="cancelUpdate">Cancel</button> <!-- Added a cancel button -->
+            </form>
+        </div>
+
+        <!-- jQuery Script for AJAX Calls and Form Handling -->
+        <script>
+            $(document).ready(function() {
+                // Function to load attendance records from the server
+                function loadAttendance() {
+                    $.ajax({
+                        url: "http://localhost:3000/attendance", // API endpoint to fetch attendance data
+                        method: "GET",
+                        success: function(data) {
+                            let rows = '<table><thead><tr><th>Student ID</th><th>Name</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead><tbody>';
+                            data.forEach(record => {
+                                // Format date to DD/MM/YYYY using toLocaleDateString
+                                let formattedDate = new Date(record.attendance_date).toLocaleDateString('en-GB');
+                                rows += `<tr>
+                                    <td>${record.student_id}</td>
+                                    <td>${record.name}</td>
+                                    <td>${formattedDate}</td>
+                                    <td>${record.status}</td>
+                                    <td>
+                                        <button class="edit-btn" data-id="${record.id}" data-student-id="${record.student_id}" data-date="${record.attendance_date}" data-status="${record.status}">Edit</button>
+                                    </td>
+                                </tr>`;
+                            });
+                            rows += '</tbody></table>';
+                            $('#attendanceTable').html(rows);
+                        },
+                        error: function(xhr, status, error) {
+                            console.error(xhr.responseText);
+                            alert("Error loading attendance: " + xhr.responseText);
+                        }
+                    });
+                }
+
+                // Call the loadAttendance function on page load
+                loadAttendance();
+
+                // Show the update form with the current attendance data
+                $(document).on('click', '.edit-btn', function() {
+                    var attendanceId = $(this).data('id');
+                    var studentId = $(this).data('student-id');
+                    var attendanceDate = $(this).data('date');
+                    var attendanceStatus = $(this).data('status');
+    
+                    // Populate form fields with existing data
+                    $('#updateAttendanceId').val(attendanceId);
+                    $('#updateStudentId').val(studentId);
+                    $('#updateAttendanceDate').val(new Date(attendanceDate).toISOString().split('T')[0]);
+                    $('#updateAttendanceStatus').val(attendanceStatus);
+    
+                    // Show the form
+                    $('#updateAttendanceFormContainer').show();
+                });
+
+                // Handle the form submission for updating attendance
+                $('#updateAttendanceForm').on('submit', function(e) {
+                    e.preventDefault(); // Prevent form from reloading the page
+    
+                    var attendanceId = $('#updateAttendanceId').val();
+                    var studentId = $('#updateStudentId').val();
+                    var attendanceStatus = $('#updateAttendanceStatus').val();
+    
+                    $.ajax({
+                        url: `http://localhost:3000/attendance/${attendanceId}`, // Update attendance route
+                        method: "PUT",
+                        contentType: "application/json",
+                        data: JSON.stringify({ student_id: studentId, status: attendanceStatus }),
+                        success: function(response) {
+                            alert(response.message); // Show success message
+                            $('#updateAttendanceFormContainer').hide(); // Hide the form after update
+                            loadAttendance(); // Reload attendance data
+                        },
+                        error: function(xhr) {
+                            alert("Error updating attendance: " + xhr.responseText); // Error handling
+                        }
+                    });
+                });
+
+                // Cancel the update and hide the form
+                $('#cancelUpdate').on('click', function() {
+                    $('#updateAttendanceFormContainer').hide(); // Hide the form
+                });
+            });
+        </script>
+    </section>
+</body>
+</html>
